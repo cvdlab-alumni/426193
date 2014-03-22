@@ -1,25 +1,20 @@
 from pyplasm import *
 
-#INIZIO CREAZIONE PIANI
+#INIZIO PARTE INTERNA
 points0 = [[0,0], [0,23], [23,0], [23,23]]
-floor0 = JOIN(AA(MK)(points0))
- 
+floor0 = JOIN(AA(MK)(points0)) #TRASLATO NELLA STRUCT
 floor1 = JOIN(AA(MK)(points0)) #TRASLATO NELLA STRUCT
-
-points2 = [[0,0,7], [0,23,7], [23,0,7], [23,23,7]]
-floor2 = JOIN(AA(MK)(points2))
-
-points3 = [[0,0,10.5], [0,23,10.5], [23,0,10.5], [23,23,10.5]]
-floor3 = JOIN(AA(MK)(points3))
-
-points4 = [[0,0,14], [0,23,14], [23,0,14], [23,23,14]]
-floor4 = JOIN(AA(MK)(points4))
-
+floor2 = JOIN(AA(MK)(points0)) #TRASLATO NELLA STRUCT
+floor3 = JOIN(AA(MK)(points0)) #TRASLATO NELLA STRUCT
+floor4 = JOIN(AA(MK)(points0)) #TRASLATO NELLA STRUCT
 floor5 = JOIN(AA(MK)(points0)) #TRASLATO NELLA STRUCT
-#FINE CREAZIONE PIANI
+floor6 = JOIN(AA(MK)(points0)) #TRASLATO NELLA STRUCT
+floor7 = JOIN(AA(MK)(points0)) #TRASLATO NELLA STRUCT
+#FINE PARTE INTERNA
 
-floors = STRUCT([COLOR([1.0, 0.89, 0.76])(floor0), COLOR([1.0,0.14,0.15])(T(3)(3.5)(floor1)), 
-		COLOR([1.0,0.84,0.0])(floor2), COLOR([0.55,0.84,0.0])(floor3), COLOR([1.0,0.84,0.46])(floor4), 
-		COLOR([1.0,0.34,0.25])(T(3)(19)(floor5))])
+two_and_half_model = STRUCT([COLOR([0.06, 0.30, 0.54])(floor0), COLOR([0.09,0.45,0.80])(T(3)(5)(floor1)), 
+		COLOR([0.10,0.52,0.93])(T(3)(10)(floor2)), COLOR([0.11,0.56,1.0])(T(3)(15)(floor3)), COLOR([0.11,0.58,1.0])(T(3)(20)(floor4)), 
+		COLOR([0,0.60,0.80])(T(3)(25)(floor5)),COLOR([0, 0.70, 0.80])(T(3)(30)(floor6)),
+		COLOR([0,0.69,0.93])(T(3)(35)(floor7))])
 
-VIEW(floors)
+VIEW(two_and_half_model)
