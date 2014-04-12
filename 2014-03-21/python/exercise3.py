@@ -72,11 +72,11 @@ building = STRUCT([struttura_esterna, two_and_half_model_3D])
 
 tanti_archi_3D = PROD([tanti_archi, Q(1)])
 nord_3D = PROD([nord, Q(1)])
-nord_3D = ROTATE([2,3])(PI/2)(DIFFERENCE([nord_3D, tanti_archi_3D]))
+#nord_3D = ROTATE([2,3])(PI/2)(DIFFERENCE([nord_3D, tanti_archi_3D])) #per far funzionare questo commentare nord = ROTATE...
 
 
 bordo_verts = [[0,0],[23,0],[0,5],[23,5]]
 bordo = PROD([JOIN(AA(MK)(bordo_verts)), Q(1)])
 bordo_3D = T([1,3])([23,30])(ROTATE([2,3])(PI/2)(bordo))
 
-VIEW(nord_3D)
+VIEW(building)
