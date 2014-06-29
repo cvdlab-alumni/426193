@@ -1,0 +1,200 @@
+<!DOCTYPE html><html><head><title>Home</title><style>
+    body{margin: 0;overflow: hidden;}#stats{
+	/* Align stats top-left */
+      position: absolute;left: 0px;top: 0px;
+    }    #video {
+      display: none; 
+      position: absolute; 
+      left 10px: 15px; 
+      bottom: 10px;
+    }
+  </style></head><body>
+  <!-- JavaScript libraries -->
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/three.js/r67/three.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/stats.js/r11/Stats.min.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.5/dat.gui.min.js"></script>
+  <script src="assets/libs/TrackballControls.js"></script>
+  <script src="assets/libs/OBJLoader.js"></script>
+  <script src="assets/libs/OBJMTLLoader.js"></script>
+  <script src="assets/libs/MTLLoader.js"></script>
+  <script src="assets/libs/Function.js"></script>
+  <script src="assets/libs/FunctionMuri.js"></script>
+  <script src="assets/libs/FunctionLamp.js"></script>
+  <script src="assets/libs/FunctionPorteFinestre.js"></script>
+  <script src="assets/libs/ObjFunction.js"></script>
+  <script src="assets/libs/tween.min.js"></script>
+  <script src="assets/libs/keyframe.js"></script>
+  <script src="assets/libs/FunctionLuci.js"></script>
+  <script src="assets/libs/FlyControls.js"></script>
+  <!-- Javascript code that runs our Three.js examples -->
+  <video id="video" src="assets/movies/Big_Buck_Bunny_small.ogv" controls="true" autoplay="false"></video>
+  <script>
+    // once everything is loaded, we run our Three.js stuff.
+	$(function () {
+		var home = new THREE.Object3D();
+		var clock = new THREE.Clock();
+		var texture;
+        var $video = $('#video');
+        var video = $video[0];
+		
+		var stats = initStats();
+		// create a scene, that will hold all our elements such as objects, cameras and lights.
+		var scene = new THREE.Scene();
+		scene.add(home);
+		// create a camera, which defines where we're looking at.
+		var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+		// create trackball controls
+		var trackballControls = new THREE.TrackballControls(camera);
+		// create a render and set the size
+		var webGLRenderer = new THREE.WebGLRenderer();
+		webGLRenderer.setClearColor(new THREE.Color(0xeeeeee, 1.0));
+		webGLRenderer.setSize(window.innerWidth, window.innerHeight);
+		// position and point the camera to the center of the scene
+		camera.position.set(-30,20,-100);
+		camera.lookAt(new THREE.Vector3(0, 0, 0));
+				camera.rotation.y = -Math.PI/2
+		// add the output of the renderer to the html element
+		$('body').append(webGLRenderer.domElement);
+		// call the render function
+		var step = 0;
+
+		// creazione modello 3D
+		var mesh;
+		var loader = new THREE.OBJLoader();
+			loader.load('assets/models/master.obj', function (obj) {
+
+				global_o = obj;
+				// var material = new THREE.MeshLambertMaterial({color: 0xaaaaaa});
+				// material.side = THREE.DoubleSide;
+				// obj.children[0].material = material;
+				//mesh = obj.children[0];
+			var multiMaterial = [
+			  new THREE.MeshLambertMaterial({color: 0xaaaaaa, side: THREE.DoubleSide, shading: THREE.FlatShading}),
+			  new THREE.MeshBasicMaterial({wireframe: true, overdraw: true, color: 0xffffff, side: THREE.DoubleSide}),
+			  ];
+
+			mesh = THREE.SceneUtils.createMultiMaterialObject(obj.children[0].geometry, multiMaterial);
+			mesh.rotation.x = 3*Math.PI/2;
+			mesh.position.set(-75,0,47.5);
+			mesh.scale.x = 5;
+			mesh.scale.y = 5;
+			mesh.scale.z = 5;
+			home.add(mesh);
+		});
+		//luci
+		var luci = createLuci();
+		home.add(luci);
+		//pavimento
+		var pavimento = createMeshFunction(new THREE.BoxGeometry(150, 3, 95), "floor-wood.jpg");
+		pavimento.position.set(0,-1.5,0);
+		home.add(pavimento);
+		//muri
+		var walls = createWalls();
+		walls.position.set(-75,0,-47.5);
+		home.add(walls);
+		//lampade		
+		var lampade = createLamps();
+		scene.add(lampade);
+
+		//prato
+		var prato = createMeshFunction(new THREE.BoxGeometry(300, 3, 190), "prato.jpg");
+		prato.position.set(0,-4.5,0);
+		home.add(prato);
+		//OBJ
+		var objMtl = createObj();
+		home.add(objMtl);
+		//first person camera
+		var flyControls = new THREE.FlyControls(camera);
+		flyControls.movementSpeed = 10;
+		flyControls.domElement = document.querySelector("#webgl");
+		flyControls.rollSpeed = Math.PI / 24;
+		flyControls.autoForward = true;
+		flyControls.dragToLook = false;
+		
+		render();
+		
+		function render() {
+			stats.update();
+			trackballControls.update();
+			KF.update();	
+			
+			if (video.readyState === video.HAVE_ENOUGH_DATA) {
+				if (texture) texture.needsUpdate = true;
+			}
+			var delta = clock.getDelta();
+
+			flyControls.update(delta);
+			webGLRenderer.clear();
+			// render using requestAnimationFrame
+			requestAnimationFrame(render);
+			webGLRenderer.render(scene, camera);
+		}
+
+		function initStats() {
+			var stats = new Stats();
+			stats.setMode(0); // 0: fps, 1: ms
+			$('body').append(stats.domElement);
+			return stats;
+		}
+		
+		//axisHelper
+		var axisHelper = new THREE.AxisHelper( 5 ); scene.add( axisHelper );
+			
+		// setup the control gui
+		var controls = new function () {
+			this.showAxisHelper = true;
+			this.trackball = false;
+		};
+		var gui = new dat.GUI();
+		var axisControl = gui.add(controls, 'showAxisHelper').onChange(function (value) {
+			    axisHelper.visible = value;
+		});
+		gui.add(controls, 'trackball').onChange(function (value) {
+			trackballControls.enabled = value;
+		});
+
+		//video
+		texture = new THREE.Texture(video);
+        texture.minFilter = THREE.LinearFilter;
+        texture.magFilter = THREE.LinearFilter;
+        texture.format = THREE.RGBFormat;
+        texture.generateMipmaps = false;
+		
+		var planeVideo = new THREE.Mesh(new THREE.PlaneGeometry(8.5,7), new THREE.MeshBasicMaterial({ map: texture, transparent:true, opacity:1 }));
+		planeVideo.position.set(26.2,9.3,-11.5);
+		planeVideo.rotation.y = Math.PI;
+		
+		//video
+		var provaGeometry = new THREE.BoxGeometry(3,3,3);
+		var provaMaterial = new THREE.MeshBasicMaterial({ color: 0x000000});
+		var prova = new THREE.Mesh(provaGeometry, provaMaterial);
+		home.add(prova);
+		//pulsante
+		var pulsanteTvGeometry = new THREE.BoxGeometry(0.5,0.5,0.5);
+		var pulsanteTvMaterial = new THREE.MeshBasicMaterial({ color: 0x900000});
+		var pulsanteTv = new THREE.Mesh(pulsanteTvGeometry, pulsanteTvMaterial);
+		pulsanteTv.position.set(20.5,6.5,-11);
+		showVideo = true;
+		pulsanteTv.azione = function(){
+			if (showVideo) {
+				home.add(planeVideo);
+				showVideo = false;
+            } else {
+				showVideo = true;
+				home.remove(planeVideo);
+            }
+		}
+		home.add(pulsanteTv);
+		
+		
+		//porte finestre
+		var porteFinestre = createPorteFinestre(camera, pulsanteTv);
+		scene.add(porteFinestre);
+
+		
+		
+		
+		
+		});
+</script></body></html>

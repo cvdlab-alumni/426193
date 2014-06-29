@@ -65,7 +65,7 @@ floor2_3D = PROD([floor2, Q(1)])
 floor1_3D = PROD([floor1, Q(1)])
 floor0_3D = PROD([floor0, Q(1)])
 
-two_and_half_model_3D = STRUCT([(T(3)(34)(floor7_3D)),(T(3)(29)(floor6_3D)),(T(3)(24)(floor5_3D)),(T(3)(19)(floor4_3D)),(T(3)(14)(floor3_3D)),(T(3)(9)(floor2_3D)),(T(3)(4)(floor1_3D)),floor0_3D])
+two_and_half_model_3D = STRUCT([(T(3)(34)(floor7_3D)),(T(3)(29)(floor6_3D)),(T(3)(24)(floor5_3D)),(T(3)(19)(floor4_3D)),(T(3)(14)(floor3_3D)),(T(3)(9)(floor2_3D)),(T(3)(4)(floor1_3D)),(T(3)(-1)(floor0_3D))])
 
 building = STRUCT([struttura_esterna, two_and_half_model_3D])
 
