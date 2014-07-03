@@ -27,6 +27,7 @@
   <script src="assets/libs/keyframe.js"></script>
   <script src="assets/libs/FunctionLuci.js"></script>
   <script src="assets/libs/FlyControls.js"></script>
+  <script src="assets/libs/FunctionBump.js"></script>
   <!-- Javascript code that runs our Three.js examples -->
   <video id="video" src="assets/movies/Big_Buck_Bunny_small.ogv" controls="true" autoplay="false"></video>
   <script>
@@ -37,6 +38,7 @@
 		var texture;
         var $video = $('#video');
         var video = $video[0];
+		video.pause();
 		
 		var stats = initStats();
 		// create a scene, that will hold all our elements such as objects, cameras and lights.
@@ -51,9 +53,9 @@
 		webGLRenderer.setClearColor(new THREE.Color(0xeeeeee, 1.0));
 		webGLRenderer.setSize(window.innerWidth, window.innerHeight);
 		// position and point the camera to the center of the scene
-		camera.position.set(-30,20,-100);
+		camera.position.set(-30,200,-250);
 		camera.lookAt(new THREE.Vector3(0, 0, 0));
-				camera.rotation.y = -Math.PI/2
+		camera.rotation.y = -Math.PI/2
 		// add the output of the renderer to the html element
 		$('body').append(webGLRenderer.domElement);
 		// call the render function
@@ -104,13 +106,13 @@
 		//OBJ
 		var objMtl = createObj();
 		home.add(objMtl);
-		//first person camera
+		//fly camera
 		var flyControls = new THREE.FlyControls(camera);
 		flyControls.movementSpeed = 10;
 		flyControls.domElement = document.querySelector("#webgl");
 		flyControls.rollSpeed = Math.PI / 24;
-		flyControls.autoForward = true;
-		flyControls.dragToLook = false;
+		flyControls.autoForward = false;
+		flyControls.dragToLook = true;
 		
 		render();
 		
@@ -144,7 +146,7 @@
 		// setup the control gui
 		var controls = new function () {
 			this.showAxisHelper = true;
-			this.trackball = false;
+			this.trackball = true;
 		};
 		var gui = new dat.GUI();
 		var axisControl = gui.add(controls, 'showAxisHelper').onChange(function (value) {
@@ -179,22 +181,20 @@
 		pulsanteTv.azione = function(){
 			if (showVideo) {
 				home.add(planeVideo);
+				video.play();
 				showVideo = false;
             } else {
+				video.pause();				
 				showVideo = true;
 				home.remove(planeVideo);
             }
 		}
 		home.add(pulsanteTv);
-		
-		
 		//porte finestre
 		var porteFinestre = createPorteFinestre(camera, pulsanteTv);
-		scene.add(porteFinestre);
-
-		
-		
-		
-		
+		home.add(porteFinestre);
+		//bump
+		var bump = createBump();
+		home.add(bump);
 		});
 </script></body></html>
